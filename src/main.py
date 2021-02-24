@@ -1,6 +1,13 @@
 import sys
 from graph import *
 
+# Return of successive ints representing colors in range 0 to num_colors
+def create_colors(num_colors):
+    colors = []
+    for i in range(1, int(num_colors+1)):
+        colors.append(i)
+    return colors
+
 def populate_graph(graph, filename):
     f = open(filename, "r")
     lines = f.readlines()
@@ -21,6 +28,8 @@ def populate_graph(graph, filename):
 
             try: num_colors = int(line[1:])
             except: return False 
+
+            graph.set_colors(create_colors(num_colors))
 
         # Once num_colors has been initialized, read vertexes and edges
         elif num_colors > 0: 

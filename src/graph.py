@@ -1,7 +1,8 @@
 class Vertex:
-    def __init__(self, node_id):
+    def __init__(self, node_id, colors):
         self.id = node_id
-        self.color = None
+        self.color = None # Only set once definite
+        self.colors_remain = colors # All possible remaining colors
         self.adj = set() # Track nodes this one is adjacent to
 
     def add_neighbor(self, neighbor):
@@ -22,13 +23,17 @@ class Vertex:
 class Graph:
     def __init__(self):
         self.nodes = {}
+        self.colors = None # List of all possible colors
+
+    def set_colors(self, colors):
+        self.colors = colors
 
     def add_edge(self, src, dst):
         # Create vertex objects if they don't already exist
         if src not in self.nodes:
-            self.nodes[src] = Vertex(src)
+            self.nodes[src] = Vertex(src, self.colors)
         if dst not in self.nodes:
-            self.nodes[dst] = Vertex(dst)
+            self.nodes[dst] = Vertex(dst, self.colors)
 
         # Create edges
         self.nodes[src].add_neighbor(self.nodes[dst])
@@ -40,3 +45,4 @@ class Graph:
             s += str(self.nodes[v].print_edges())
             s += "\n"
         return s
+
