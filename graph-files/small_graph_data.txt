@@ -1,0 +1,12 @@
+# First non comment line must be of form "Colors = n"
+Colors = 3
+# Now the graph data
+a,b
+a,c
+a,f
+b,c
+b,d
+c,d
+c,f
+d,e
+e,f
