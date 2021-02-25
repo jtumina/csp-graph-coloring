@@ -50,5 +50,5 @@ if __name__ == "__main__":
     if not populate_graph(graph, sys.argv[1]):
         sys.exit("Unable to parse " + str(sys.argv[1]))
 
+    graph.color_graph()  
     print(graph) 
-

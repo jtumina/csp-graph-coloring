@@ -5,8 +5,13 @@ class Vertex:
         self.colors_remain = colors # All possible remaining colors
         self.adj = set() # Track nodes this one is adjacent to
 
-    def color(self, color):
+    """
+    Set the color for this vertex and remove all other colors from its
+    colors_remain list.
+    """
+    def set_color(self, color):
         self.color = color
+        self.colors_remain = [color]
 
     def add_neighbor(self, neighbor):
         self.adj.add(neighbor)
@@ -42,15 +47,37 @@ class Graph:
     def __str__(self):
         s = ""
         for v in self.nodes:
-            s += str(self.nodes[v].print_edges())
+            s += str(self.nodes[v])
             s += "\n"
         return s
 
+    """
+    Returns the least constraining value (color) for vertex v.
+    """
     def lcv(self, v):
-        return None
+        lcv = None 
+        min_num_affected = float('inf')
 
+        for c in v.colors_remain:
+            num_affected = 0
+            for u in v.adj:
+                if c in u.colors_remain:
+                    num_affected += 1
+            if num_affected < min_num_affected:
+                lcv = c
+                min_num_affected = num_affected
+
+        return lcv 
+
+    """
+    Returns the vertex with the minimum remaining possible colors. Ties are
+    broken based on the vertex with the least constraints.
+
+    uncolored: list of vertexes yet to be colored
+    """
     def mrv(self, uncolored):
-        max_constrn_node = None
+        # Most constrained variable 
+        mcv = None
 
         for v in uncolored:
             # Get vertex obj of v
@@ -60,25 +87,60 @@ class Graph:
             if v.color != None:
                 continue
 
-            if max_constrn_node == None:
-                max_constrn_node = v
-            elif len(v.colors_remain) < len(max_constrn_node.colors_remain):
-                max_constrn_node = v
-            elif len(v.colors_remain) == len(max_constrn_node.colors_remain):
-                if len(v.adj) > len(max_constrn_node.adj):
-                    max_constrn_node = v
+            if mcv == None:
+                mcv = v
+            elif len(v.colors_remain) < len(mcv.colors_remain):
+                mcv = v
+            elif len(v.colors_remain) == len(mcv.colors_remain):
+                if len(v.adj) > len(mcv.adj):
+                    mcv = v
 
-        return max_constrn_node
+        return mcv 
 
-    
-    #def rm_inconsistent_vals(self, v, u):
-    #def ac3(self):
+    def rm_inconsistent_vals(self, v, u):
+        removed = False
+
+        i = 0
+        n = len(v.colors_remain)
+        while i < n:
+            cx = v.colors_remain[i]
+            # Is there no cy in u.colors_remain such that cy != cx?
+            if len(u.colors_remain) == 1 and u.colors_remain[0] == cx:
+                v.colors_remain.remove(cx)
+                n -= 1
+                removed = True
+            i += 1
+
+        return removed 
+
+    """
+    Add every arc (2-tuple) of the form (v,U) to the queue such that v is an uncolored node.
+    uncolored: list of unoclored nodes left in the graph
+    """
+    def create_arcs(self, uncolored):
+        queue = []
+
+        for v in uncolored:
+            v = self.nodes[v]
+            for u in v.adj:
+                queue.append((v.id,u.id))
+
+        return queue
+                
+    def ac3(self, uncolored):
+        queue = self.create_arcs(uncolored)
+        while queue:
+            arc = queue.pop(0)
+            v = self.nodes[arc[0]]            
+            u = self.nodes[arc[1]]            
+            if self.rm_inconsistent_vals(v, u):
+                for k in u.adj:
+                    queue.append((k.id, v.id))
 
     def color_graph(self):
-        while v := self.mrv():
+        uncolored = list(self.nodes.keys())
+        while v := self.mrv(uncolored):
             lcv = self.lcv(v)
-            v.color(lcv)
-            self.ac3()
-
-        for v in self.nodes:
-            print(self.nodes[v]) 
+            v.set_color(lcv)
+            uncolored.remove(v.id)
+            self.ac3(uncolored)
