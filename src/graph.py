@@ -49,10 +49,10 @@ class Graph:
     def lcv(self, v):
         return None
 
-    def mrv(self):
+    def mrv(self, uncolored):
         max_constrn_node = None
 
-        for v in self.nodes:
+        for v in uncolored:
             # Get vertex obj of v
             v = self.nodes[v]
 
