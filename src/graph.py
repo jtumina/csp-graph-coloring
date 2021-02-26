@@ -1,3 +1,5 @@
+import sys
+
 class Vertex:
     def __init__(self, node_id, colors):
         self.id = node_id
@@ -60,6 +62,9 @@ class Graph:
             if num_affected < min_num_affected:
                 lcv = c
                 min_num_affected = num_affected
+
+        if lcv == None:
+            sys.exit("Graph cannot be colored!")
 
         return lcv 
 
