@@ -2,7 +2,7 @@ class Vertex:
     def __init__(self, node_id, colors):
         self.id = node_id
         self.color = None # Only set once definite
-        self.colors_remain = colors # All possible remaining colors
+        self.colors_remain = colors.copy() # All possible remaining colors
         self.adj = set() # Track nodes this one is adjacent to
 
     """
@@ -18,12 +18,6 @@ class Vertex:
 
     def __str__(self):
         return str(self.id) + " : " + str(self.color)
-
-    def print_edges(self):
-        s = str(self) + "\n"
-        for v in self.adj:
-            s += "  -> " + str(v) + "\n"
-        return s
 
 class Graph:
     def __init__(self):
@@ -45,7 +39,7 @@ class Graph:
         self.nodes[dst].add_neighbor(self.nodes[src])
 
     def __str__(self):
-        s = ""
+        s = "Vertex ID : Color\n"
         for v in self.nodes:
             s += str(self.nodes[v])
             s += "\n"
@@ -104,7 +98,8 @@ class Graph:
         n = len(v.colors_remain)
         while i < n:
             cx = v.colors_remain[i]
-            # Is there no cy in u.colors_remain such that cy != cx?
+            
+            # Is cx the only remaining color for u?
             if len(u.colors_remain) == 1 and u.colors_remain[0] == cx:
                 v.colors_remain.remove(cx)
                 n -= 1
@@ -134,11 +129,12 @@ class Graph:
             v = self.nodes[arc[0]]            
             u = self.nodes[arc[1]]            
             if self.rm_inconsistent_vals(v, u):
-                for k in u.adj:
+                for k in v.adj:
                     queue.append((k.id, v.id))
 
     def color_graph(self):
         uncolored = list(self.nodes.keys())
+
         while v := self.mrv(uncolored):
             lcv = self.lcv(v)
             v.set_color(lcv)
