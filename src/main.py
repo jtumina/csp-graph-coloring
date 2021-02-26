@@ -20,7 +20,7 @@ def populate_graph(graph, filename):
             continue
 
         # This is the "Colors = n" line
-        if num_colors == 0 and len(line) >= 8 and line[0:6] == "Colors":
+        if num_colors == 0 and len(line) >= 8 and str(line[0:6]).lower() == "colors":
             line = line[6:].lstrip().rstrip() 
             
             if line[0] != "=":
