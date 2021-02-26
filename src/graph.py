@@ -63,9 +63,6 @@ class Graph:
                 lcv = c
                 min_num_affected = num_affected
 
-        if lcv == None:
-            sys.exit("Graph cannot be colored!")
-
         return lcv 
 
     """
@@ -106,6 +103,8 @@ class Graph:
             
             # Is cx the only remaining color for u?
             if len(u.colors_remain) == 1 and u.colors_remain[0] == cx:
+                print("(" + str(v.id) + ", " + str(u.id) + ")")
+                print("Removing " + str(cx)+" from "+str(v.id)+str(v.colors_remain))
                 v.colors_remain.remove(cx)
                 n -= 1
                 removed = True
@@ -137,11 +136,24 @@ class Graph:
                 for k in v.adj:
                     queue.append((k.id, v.id))
 
+    """
+    Function colors graph. Returns True on sucess, False otherwise.
+    """
     def color_graph(self):
         uncolored = list(self.nodes.keys())
 
         while v := self.mrv(uncolored):
+            print("mrv = " + str(v.id))
             lcv = self.lcv(v)
+
+            # If lcv does not return a color, graph cannot be colored
+            if lcv == None: 
+                return False
+
+            print("color = " + str(lcv))
             v.set_color(lcv)
             uncolored.remove(v.id)
             self.ac3(uncolored)
+            print()
+
+        return True
